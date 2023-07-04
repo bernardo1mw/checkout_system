@@ -1,29 +1,29 @@
-function calculateDigit (cpf: string, factor: number) {
+function calculateDigit(cpf: string, factor: number) {
 	let total = 0;
 	for (const digit of cpf) {
 		if (factor > 1) total += parseInt(digit) * factor--;
 	}
-	const rest = total%11;
-	return (rest < 2) ? 0 : 11 - rest;
+	const rest = total % 11;
+	return rest < 2 ? 0 : 11 - rest;
 }
 
-function clean (cpf: string) {
-	return cpf.replace(/\D/g, "");
+function clean(cpf: string) {
+	return cpf.replace(/\D/g, '');
 }
 
-function isValidLength (cpf: string) {
+function isValidLength(cpf: string) {
 	return cpf.length !== 11;
 }
 
-function allDigitsTheSame (cpf: string) {
-	return cpf.split("").every(c => c === cpf[0]);
+function allDigitsTheSame(cpf: string) {
+	return cpf.split('').every((c) => c === cpf[0]);
 }
 
-function extractCheckDigit (cpf: string) {
-	return cpf.substring(cpf.length-2, cpf.length);
+function extractCheckDigit(cpf: string) {
+	return cpf.substring(cpf.length - 2, cpf.length);
 }
 
-export function validate (cpf: string) {
+export function validate(cpf: string) {
 	if (!cpf) return false;
 	cpf = clean(cpf);
 	if (isValidLength(cpf)) return false;

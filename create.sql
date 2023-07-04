@@ -1,5 +1,6 @@
 drop table cccat10.coupon;
 drop table cccat10.product;
+drop table cccat10.order;
 drop schema cccat10;
 create schema cccat10;
 
@@ -28,3 +29,10 @@ create table cccat10.coupon (
 
 insert into cccat10.coupon (code, percentage, expire_date) values ('VALE20', 20, '2023-10-01T10:00:00');
 insert into cccat10.coupon (code, percentage, expire_date) values ('VALE10', 10, '2022-10-01T10:00:00');
+
+
+create table cccat10.order (
+	id serial PRIMARY KEY,
+	order_date timestamp,
+	serialNumber text
+)

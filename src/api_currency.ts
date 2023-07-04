@@ -1,12 +1,11 @@
-import express, { Request, Response } from "express";
+import express, { Request, Response } from 'express';
 const app = express();
 app.use(express.json());
 
-app.get("/currencies", async function (req: Request, res: Response) {
+app.get('/currencies', async function (req: Request, res: Response) {
 	res.json({
-		usd: 3 + Math.random()
+		usd: 3 + Math.random(),
 	});
-
 });
 
 app.listen(3001);
