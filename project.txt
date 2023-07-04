@@ -71,3 +71,7 @@ distância: 1000 (fixo)
 volume: 1
 densidade: 40
 preço: R$400,00 (1000 * 1 * (40/100))
+
+
+Parte 3
+

@@ -1,37 +1,37 @@
 export default class Cpf {
 	readonly value: string;
 
-	constructor (cpf: string) {
-		if (!this.validate(cpf)) throw new Error("Invalid cpf");
+	constructor(cpf: string) {
+		if (!this.validate(cpf)) throw new Error('Invalid cpf');
 		this.value = cpf;
 	}
 
-	calculateDigit (cpf: string, factor: number) {
+	calculateDigit(cpf: string, factor: number) {
 		let total = 0;
 		for (const digit of cpf) {
 			if (factor > 1) total += parseInt(digit) * factor--;
 		}
-		const rest = total%11;
-		return (rest < 2) ? 0 : 11 - rest;
+		const rest = total % 11;
+		return rest < 2 ? 0 : 11 - rest;
 	}
-	
-	clean (cpf: string) {
-		return cpf.replace(/\D/g, "");
+
+	clean(cpf: string) {
+		return cpf.replace(/\D/g, '');
 	}
-	
-	isValidLength (cpf: string) {
+
+	isValidLength(cpf: string) {
 		return cpf.length !== 11;
 	}
-	
-	allDigitsTheSame (cpf: string) {
-		return cpf.split("").every(c => c === cpf[0]);
+
+	allDigitsTheSame(cpf: string) {
+		return cpf.split('').every((c) => c === cpf[0]);
 	}
-	
-	extractCheckDigit (cpf: string) {
-		return cpf.substring(cpf.length-2, cpf.length);
+
+	extractCheckDigit(cpf: string) {
+		return cpf.substring(cpf.length - 2, cpf.length);
 	}
-	
-	validate (cpf: string) {
+
+	validate(cpf: string) {
 		if (!cpf) return false;
 		cpf = this.clean(cpf);
 		if (this.isValidLength(cpf)) return false;
@@ -42,5 +42,4 @@ export default class Cpf {
 		const calculatedDigit = `${digit1}${digit2}`;
 		return actualDigit == calculatedDigit;
 	}
-	
 }

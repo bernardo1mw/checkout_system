@@ -1,17 +1,17 @@
 export default class CurrencyTable {
 	value: { [currency: string]: number };
 
-	constructor () {
+	constructor() {
 		this.value = {
-			"BRL": 1
+			BRL: 1,
 		};
 	}
 
-	addCurrency (currency: string, value: number) {
+	addCurrency(currency: string, value: number) {
 		this.value[currency] = value;
 	}
 
-	getCurrency (currency: string) {
+	getCurrency(currency: string) {
 		return this.value[currency];
 	}
 }
