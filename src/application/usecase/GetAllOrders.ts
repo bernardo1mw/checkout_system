@@ -1,19 +1,20 @@
 import OrderRepository from '../../OrderRepository';
 import OrderRepositoryDatabase from '../../OrderRepositoryDatabase';
 
-export default class GetOrder {
+export default class GetAllOrders {
 	constructor(
 		readonly orderRepository: OrderRepository = new OrderRepositoryDatabase(),
 	) {}
 
-	async execute(id: string): Promise<Output> {
-		const order = await this.orderRepository.getById(id);
-		const output: Output = {
-			code: order.getCode(),
-			total: order.getTotal(),
-			freight: order.freight,
-		};
-		return output;
+	async execute(): Promise<Output[]> {
+		const orders = await this.orderRepository.getAll();
+		return orders.map((order) => {
+			return {
+				code: order.getCode(),
+				total: order.getTotal(),
+				freight: order.freight,
+			};
+		});
 	}
 }
 

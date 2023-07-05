@@ -9,13 +9,19 @@ import crypto from 'crypto';
 import GetOrder from '../src/application/usecase/GetOrder';
 import OrderRepositoryDatabase from '../src/OrderRepositoryDatabase';
 import Product from '../src/domain/entity/Product';
+import GetAllOrders from '../src/application/usecase/GetAllOrders';
+import Order from '../src/domain/entity/Order';
+import OrderRepository from '../src/OrderRepository';
+import Item from '../src/domain/entity/Item';
 
 let checkout: Checkout;
 let getOrder: GetOrder;
+let getAllOrders: GetAllOrders;
 
 beforeEach(function () {
 	checkout = new Checkout();
 	getOrder = new GetOrder();
+	getAllOrders = new GetAllOrders();
 });
 
 test('Não deve aceitar um pedido com cpf inválido', async function () {
@@ -238,5 +244,35 @@ test('Deve criar um pedido e verificar o código de série', async function () {
 	await checkout.execute(input);
 	const output = await getOrder.execute(uuid);
 	expect(output.code).toBe('202300000001');
+	stub.restore();
+});
+
+test('Deve criar dois pedidos e retornar todos', async function () {
+	const uuid1 = crypto.randomUUID();
+	const uuid2 = crypto.randomUUID();
+	const order = new Order(uuid1, '407.302.170-27', undefined, 1, new Date());
+	order.items.push(new Item(1, 1000, 1, 'BRL'));
+
+	const order1 = new Order(uuid1, '357.317.690-95', undefined, 1, new Date());
+	order.items.push(new Item(1, 1000, 1, 'BRL'));
+
+	const stub = sinon
+		.stub(OrderRepositoryDatabase.prototype, 'getAll')
+		.resolves([order, order1]);
+
+	const input = {
+		uuid1,
+		cpf: '407.302.170-27',
+		items: [{ idProduct: 1, quantity: 1 }],
+	};
+	const input2 = {
+		uuid2,
+		cpf: '357.317.690-95',
+		items: [{ idProduct: 1, quantity: 1 }],
+	};
+	await checkout.execute(input);
+	await checkout.execute(input2);
+	const output = await getAllOrders.execute();
+	expect(output[0].total + output[1].total).toBe(2000);
 	stub.restore();
 });

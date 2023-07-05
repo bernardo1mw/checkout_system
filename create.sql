@@ -2,6 +2,8 @@ drop table cccat10.item;
 drop table cccat10.order;
 drop table cccat10.coupon;
 drop table cccat10.product;
+drop table if exists cccat10.zipcode;
+
 drop schema cccat10;
 create schema cccat10;
 
@@ -45,3 +47,15 @@ create table cccat10.item (
 	price numeric,
 	quantity integer
 );
+
+
+create table cccat10.zipcode (
+	code text primary key,
+	street text,
+	neighborhood text,
+	lat numeric,
+	long numeric
+);
+
+insert into cccat10.zipcode (code, street, neighborhood, lat, long) values ('88015600', 'Rua Almirante Lamego', 'Centro', -27.5945, -48.5477);
+insert into cccat10.zipcode (code, street, neighborhood, lat, long) values ('22060030', 'Rua Aires Saldanha', 'Copacabana', -22.9129, -43.2003);

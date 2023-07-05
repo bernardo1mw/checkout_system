@@ -4,6 +4,37 @@ import Order from './domain/entity/Order';
 import Item from './domain/entity/Item';
 
 export default class OrderRepositoryDatabase implements OrderRepository {
+	async getAll(): Promise<Order[]> {
+		const connection = pgp()('postgres://postgres:123456@localhost:5432/app');
+		const ordersData = await connection.query('select * from cccat10.order');
+		const orders = [];
+		for (const orderData of ordersData) {
+			const order = new Order(
+				orderData.id_order,
+				orderData.cpf,
+				undefined,
+				1,
+				new Date(),
+			);
+			const itemsData = await connection.query(
+				'select * from cccat10.item where id_order = $1',
+				[orderData.id_order],
+			);
+			for (const itemData of itemsData) {
+				order.items.push(
+					new Item(
+						itemData.id_product,
+						parseFloat(itemData.price),
+						itemData.quantity,
+						'BRL',
+					),
+				);
+			}
+			orders.push(order);
+		}
+		return orders;
+	}
+
 	async save(order: Order): Promise<void> {
 		const connection = pgp()('postgres://postgres:123456@localhost:5432/app');
 		await connection.query(
