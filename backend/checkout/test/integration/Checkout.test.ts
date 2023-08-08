@@ -16,13 +16,19 @@ import OrderRepository from '../../src/application/repository/OrderRepository';
 import AxiosAdapter from '../../src/infra/http/AxiosAdapter';
 import CatalogGatewayHttp from '../../src/infra/gateway/CatalogGatewayHttp';
 import { AuthDecorator } from '../../src/application/decorator/AuthDecorator';
+import StockGatewayHttp from '../../src/infra/gateway/StockGatewayHttp';
+import { StockGateway } from '../../src/application/gateway/StockGateway';
+import { StockDecorator } from '../../src/application/decorator/StockDecorator';
+import CancelOrder from '../../src/application/usecase/CancelOrder';
 
 let checkout: Checkout;
 let getOrder: GetOrder;
+let cancelOrder: CancelOrder;
 let connection: Connection;
 let productRepository: ProductRepository;
 let couponRepository: CouponRepository;
 let orderRepository: OrderRepository;
+let stockGateway: StockGateway;
 
 beforeEach(function () {
 	connection = new PgPromise();
@@ -38,6 +44,8 @@ beforeEach(function () {
 		orderRepository,
 	);
 	getOrder = new GetOrder(orderRepository);
+	stockGateway = new StockGatewayHttp(httpClient);
+	cancelOrder = new CancelOrder(orderRepository, stockGateway);
 });
 
 afterEach(async function () {
@@ -304,4 +312,37 @@ test('Não deve funcionar se o usuario não estiver autenticado', async function
 	await expect(() => decoratedCheckout.execute(input)).rejects.toThrow(
 		new Error('Auth error'),
 	);
+});
+
+test('Deve diminuir o estoque ao realizar um pedido', async function () {
+	const decoratedCheckout = new StockDecorator(checkout);
+	const input = {
+		cpf: '407.302.170-27',
+		items: [{ idProduct: 1, quantity: 1 }],
+		coupon: 'VALE20',
+		token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InRlc3RlQGdtYWlsLmNvbSIsImlhdCI6MTY3NzY3NTYwMDAwMCwiZXhwaXJlc0luIjoxMDAwMDAwfQ.-842E0wQ7zdUR9iPXKcpIdXn0Vc9AFrxusy-eZb7-xA',
+	};
+	await decoratedCheckout.execute(input);
+	let stock = await stockGateway.verify({ idProduct: 1 });
+	expect(stock).toBe(4);
+	await stockGateway.increaseStock({ idProduct: 1, quantity: 1 });
+	stock = await stockGateway.verify({ idProduct: 1 });
+	expect(stock).toBe(5);
+});
+
+test('Deve cancelar um pedido', async function () {
+	const uuid = crypto.randomUUID();
+	const input = {
+		uuid,
+		cpf: '407.302.170-27',
+		items: [{ idProduct: 1, quantity: 1 }],
+	};
+	const decoratedCheckout = new StockDecorator(checkout);
+
+	await decoratedCheckout.execute(input);
+	let stock = await stockGateway.verify({ idProduct: 1 });
+	expect(stock).toBe(4);
+	await cancelOrder.execute(uuid);
+	stock = await stockGateway.verify({ idProduct: 1 });
+	expect(stock).toBe(5);
 });

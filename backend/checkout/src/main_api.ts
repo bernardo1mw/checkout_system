@@ -10,10 +10,12 @@ import PgPromise from './infra/database/PgPromiseAdapter';
 import ProductRepositoryDatabase from './infra/repository/ProductRepositoryDatabase';
 import GetProducts from './application/usecase/GetProducts';
 import { AuthDecorator } from './application/decorator/AuthDecorator';
+import StockGatewayHttp from './infra/gateway/StockGatewayHttp';
 
 const connection = new PgPromise();
 const httpClient = new AxiosAdapter();
 const currencyGateway = new CurrencyGatewayHttp(httpClient);
+const stockGateway = new StockGatewayHttp(httpClient);
 const productRepository = new ProductRepositoryDatabase(connection);
 const couponRepository = new CouponRepositoryDatabase(connection);
 const orderRepository = new OrderRepositoryDatabase(connection);

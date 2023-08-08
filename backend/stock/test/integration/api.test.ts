@@ -6,14 +6,17 @@ axios.defaults.validateStatus = function () {
 
 test('deve validar o fluxo de autenticação', async () => {
 	const input = {
-		email: 'teste@gmail.com',
-		password: 'abc123',
-		date: new Date('2023-03-01T10:00:00'),
+		idProduct: 1,
+		quantity: 2,
 	};
-	await axios.post('http://localhost:3004/signup', input);
-	const response = await axios.post('http://localhost:3004/login', input);
-	const output = response.data;
-	expect(output.token).toBe(
-		'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InRlc3RlQGdtYWlsLmNvbSIsImlhdCI6MTY3NzY3NTYwMDAwMCwiZXhwaXJlc0luIjoxMDAwMDAwfQ.-842E0wQ7zdUR9iPXKcpIdXn0Vc9AFrxusy-eZb7-xA',
-	);
+	await axios.post('http://localhost:3006/increase-stock', input);
+	const response = await axios.post('http://localhost:3006/verify', {
+		productId: 1,
+	});
+	expect(response.data).toBe(7);
+	await axios.post('http://localhost:3006/reduce-stock', input);
+	const res = await axios.post('http://localhost:3006/verify', {
+		productId: 1,
+	});
+	expect(res.data).toBe(5);
 });

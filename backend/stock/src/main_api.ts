@@ -1,30 +1,30 @@
 import ExpressAdapter from './infra/http/ExpressAdapter';
 import HttpController from './infra/http/HttpController';
 import PgPromise from './infra/database/PgPromiseAdapter';
-import ProductRepositoryDatabase from './infra/repository/ProductRepositoryDatabase';
-import UserRepository from './application/repository/AccountRepository';
-import User from './domain/entities/User';
-import SignUp from './application/usecase/sign-up';
-import Login from './application/usecase/login';
-import Verify from './application/usecase/verify';
+import Verify from './application/usecase/Verify';
+import StockRepository, {
+	UpdateInput,
+} from './application/repository/StockRepository';
+import IncreaseStock from './application/usecase/IncreaseStock';
+import ReduceStock from './application/usecase/ReduceStock';
 
 const connection = new PgPromise();
 const httpServer = new ExpressAdapter();
-const users: any = {};
-const userRepository: UserRepository = {
-	async save(user: User): Promise<void> {
-		users[user.email.value] = user;
+const productsInStock: any = [5, 5, 5, 5, 5];
+const stockRepository: StockRepository = {
+	async getById(idProduct: number): Promise<number> {
+		return productsInStock[idProduct];
 	},
-	async get(email: string): Promise<User> {
-		return users[email];
+	async reduceStock(input: UpdateInput): Promise<any> {
+		productsInStock[input.idProduct] -= input.quantity;
 	},
-	countBy: function (input: string): Promise<number> {
-		throw new Error('Function not implemented.');
+	async increaseStock(input: UpdateInput): Promise<any> {
+		productsInStock[input.idProduct] += input.quantity;
 	},
 };
-const signUp = new SignUp(userRepository);
-const login = new Login(userRepository);
-const verify = new Verify();
+const increaseStock = new IncreaseStock(stockRepository);
+const reduceStock = new ReduceStock(stockRepository);
+const verify = new Verify(stockRepository);
 
-new HttpController(httpServer, signUp, login, verify);
-httpServer.listen(3004);
+new HttpController(httpServer, increaseStock, reduceStock, verify);
+httpServer.listen(3006);

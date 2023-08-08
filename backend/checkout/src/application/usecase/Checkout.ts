@@ -46,7 +46,9 @@ export default class Checkout implements Usecase {
 				const product = await this.catalogGateway.getProduct(
 					item.idProduct,
 				);
+				// this.stockGateway.reduceStock(item);
 				order.addItem(product, item.quantity);
+
 				freightInput.items.push({
 					width: product.width,
 					height: product.height,
