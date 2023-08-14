@@ -1,30 +1,21 @@
-import Login from '../../application/usecase/login';
-import SignUp from '../../application/usecase/sign-up';
-import Verify from '../../application/usecase/verify';
-import HttpServer from './HttpServer';
+import CalculateStock from "../../application/usecase/CalculateStock";
+import DecrementStock from "../../application/usecase/DecrementStock";
+import HttpServer from "./HttpServer";
 
 export default class HttpController {
-	constructor(
+
+	constructor (
 		readonly httpServer: HttpServer,
-		readonly signUp: SignUp,
-		readonly login: Login,
-		readonly verify: Verify,
+		readonly decrementStock: DecrementStock,
+		readonly calculateStock: CalculateStock
 	) {
-		httpServer.on('post', '/signup', async function (params: any, body: any) {
-			const output = await signUp.execute(body);
+		httpServer.on("post", "/decrementStock", async function (params: any, body: any) {
+			const output = await decrementStock.execute(body);
 			return output;
 		});
 
-		httpServer.on('post', '/login', async function (params: any, body: any) {
-			if (typeof body.date === 'string') {
-				body.date = new Date(body.date);
-			}
-			const output = await login.execute(body);
-			return output;
-		});
-
-		httpServer.on('post', '/verify', async function (params: any, body: any) {
-			const output = await verify.execute(body.token);
+		httpServer.on("post", "/calculateStock", async function (params: any, body: any) {
+			const output = await calculateStock.execute(body);
 			return output;
 		});
 	}

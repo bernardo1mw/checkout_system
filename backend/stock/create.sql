@@ -45,11 +45,3 @@ create table cccat10.item (
 	price numeric,
 	quantity integer
 );
-
-
-create table cccat10.account (
-	id_account text,
-	username text,
-	email text,
-	password text,
-);

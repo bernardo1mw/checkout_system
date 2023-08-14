@@ -1,30 +1,34 @@
+import StockEntryRepository from './application/repository/StockEntryRepository';
+import CalculateStock from './application/usecase/CalculateStock';
+import DecrementStock from './application/usecase/DecrementStock';
+import StockEntry from './domain/entity/StockEntry';
+import PgPromise from './infra/database/PgPromiseAdapter';
+import AxiosAdapter from './infra/http/AxiosAdapter';
 import ExpressAdapter from './infra/http/ExpressAdapter';
 import HttpController from './infra/http/HttpController';
-import PgPromise from './infra/database/PgPromiseAdapter';
-import ProductRepositoryDatabase from './infra/repository/ProductRepositoryDatabase';
-import UserRepository from './application/repository/AccountRepository';
-import User from './domain/entities/User';
-import SignUp from './application/usecase/sign-up';
-import Login from './application/usecase/login';
-import Verify from './application/usecase/verify';
+import QueueController from './infra/queue/QueueController';
+import RabbitMQAdapter from './infra/queue/RabbitMQAdapter';
 
-const connection = new PgPromise();
-const httpServer = new ExpressAdapter();
-const users: any = {};
-const userRepository: UserRepository = {
-	async save(user: User): Promise<void> {
-		users[user.email.value] = user;
-	},
-	async get(email: string): Promise<User> {
-		return users[email];
-	},
-	countBy: function (input: string): Promise<number> {
-		throw new Error('Function not implemented.');
-	},
-};
-const signUp = new SignUp(userRepository);
-const login = new Login(userRepository);
-const verify = new Verify();
+async function main() {
+	const stockEntries: StockEntry[] = [new StockEntry(1, 'in', 20)];
+	const stockEntryRepository: StockEntryRepository = {
+		async save(stockEntry: StockEntry) {
+			stockEntries.push(stockEntry);
+		},
+		async list(idProduct: number) {
+			return stockEntries.filter(
+				(stockEntry: StockEntry) => stockEntry.idProduct === idProduct,
+			);
+		},
+	};
+	const decrementStock = new DecrementStock(stockEntryRepository);
+	const calculateStock = new CalculateStock(stockEntryRepository);
+	const httpServer = new ExpressAdapter();
+	new HttpController(httpServer, decrementStock, calculateStock);
+	const queue = new RabbitMQAdapter();
+	await queue.connect();
+	new QueueController(queue, decrementStock);
+	httpServer.listen(3005);
+}
 
-new HttpController(httpServer, signUp, login, verify);
-httpServer.listen(3004);
+main();

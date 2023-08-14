@@ -12,6 +12,9 @@ import AxiosAdapter from '../../infra/http/AxiosAdapter';
 import CatalogGateway from '../gateway/CatalogGateway';
 import CatalogGatewayHttp from '../../infra/gateway/CatalogGatewayHttp';
 import { Usecase } from './Usecase';
+import { Queue } from '../../infra/queue/Queue';
+import StockGateway from '../gateway/StockGateway';
+import StockGatewayHttp from '../../infra/gateway/StockGatewayHttp';
 
 export default class Checkout implements Usecase {
 	constructor(
@@ -25,6 +28,10 @@ export default class Checkout implements Usecase {
 		readonly catalogGateway: CatalogGateway = new CatalogGatewayHttp(
 			new AxiosAdapter(),
 		),
+		readonly stockGateway: StockGateway = new StockGatewayHttp(
+			new AxiosAdapter(),
+		),
+		readonly queue?: Queue,
 	) {}
 
 	async execute(input: Input): Promise<Output> {
@@ -69,6 +76,9 @@ export default class Checkout implements Usecase {
 		}
 		const total = order.getTotal();
 		await this.orderRepository.save(order);
+		if (this.queue) {
+			await this.queue.publish('orderPlaced', input);
+		}
 		return {
 			total,
 			freight,
