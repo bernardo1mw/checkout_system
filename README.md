@@ -276,5 +276,3 @@ Frontend → Checkout Service → [Auth, Catalog, Freight, Stock, Currency]
 MIT License - See the LICENSE file for details.
 
 ---
-
-**Developed as part of the Clean Code and Clean Architecture course from Branas.io**
