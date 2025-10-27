@@ -1,7 +1,3 @@
-# 🏗️ Clean Code and Clean Architecture Course - Branas.io
-
-This project is part of the **Clean Code and Clean Architecture** course from Branas.io, demonstrating the implementation of clean architecture in a distributed e-commerce system.
-
 ## 📋 Overview
 
 The project implements a complete checkout system following **Clean Architecture** and **Domain-Driven Design (DDD)** principles, with clear separation of responsibilities and high testability.
