@@ -43,7 +43,7 @@ The project follows **Clean Architecture** principles with the following layers:
 ### 📁 Project Structure
 
 ```
-Curso_Branas/
+checkout_system/
 ├── backend/                    # Backend services
 │   ├── auth/                   # Authentication and authorization
 │   ├── catalog/               # Product catalog
@@ -88,7 +88,7 @@ Curso_Branas/
 ### 1. Clone the repository
 ```bash
 git clone <repository-url>
-cd Curso_Branas
+cd checkout_system
 ```
 
 ### 2. Install backend dependencies
@@ -270,16 +270,6 @@ Frontend → Checkout Service → [Auth, Catalog, Freight, Stock, Currency]
                 ↓
             RabbitMQ Queue → Stock Service (automatic decrement)
 ```
-
-## 📖 Additional Resources
-
-- [Clean Architecture - Robert C. Martin](https://blog.cleancoder.com/uncle-bob/2012/08/13/the-clean-architecture.html)
-- [Domain-Driven Design - Eric Evans](https://domainlanguage.com/ddd/)
-- [Branas.io Course](https://app.branas.io/clean-code-e-clean-architecture)
-
-## 🤝 Contributing
-
-This is an educational project from the Branas.io course. For questions about implementation or concepts, please refer to the course material.
 
 ## 📄 License
 
